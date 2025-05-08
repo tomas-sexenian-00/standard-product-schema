@@ -1,0 +1,715 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "version": 1.0,
+    "allOf": [
+      {
+        "properties": {
+          "availability": {
+            "description": "The availability status for the product.",
+            "enum": [
+              "InStock",
+              "OutOfStock"
+            ],
+            "example": [
+              "InStock"
+            ],
+            "type": "string"
+          },
+          "color": {
+            "description": "The color of the product.",
+            "type": "string",
+            "example": "white"
+          },
+          "currency": {
+            "description": "The currency associated with the price, in ISO 4217 standard (e.g. USD).",
+            "examples": [
+              "USD",
+              "JPY"
+            ],
+            "pattern": "^[A-Z]{3}$",
+            "type": "string"
+          },
+          "currencyRaw": {
+            "description": "The currency associated with the price, as appears on the page (no post-processing).",
+            "example": "$",
+            "type": "string"
+          },
+          "productId": {
+            "description": "Product identifier, unique across dataset. It may come in the form of an SKU, any other identifier, a hash or even a URL.\nUnique across dataset (violation produces a warning).",
+            "type": "string"
+          },
+          "gtin": {
+            "description": "List of standardized GTIN product identifiers associated with the product, which are unique for the product across different sellers.",
+            "example": [
+              {
+                "type": "gtin8",
+                "value": "86591475"
+              },
+              {
+                "type": "gtin13",
+                "value": "9783161484100"
+              }
+            ],
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "type",
+                "value"
+              ],
+              "properties": {
+                "type": {
+                  "description": "The type of product identifier.",
+                  "type": "string",
+                  "enum": [
+                    "gtin13",
+                    "gtin8",
+                    "gtin14",
+                    "isbn10",
+                    "isbn13",
+                    "ismn",
+                    "issn",
+                    "upc"
+                  ]
+                },
+                "value": {
+                  "description": "The value of product identifier.\nFormat: - Normalized: only numerical characters allowed.",
+                  "type": "string",
+                  "pattern": "^[0-9]+$"
+                }
+              }
+            }
+          },
+          "images": {
+            "description": "A list of URL values of all images of the product. This does not take into account any images in the product description.\nBest quality image, under the following conditions:\n- if possible without making additional requests,\n- if required, with additional parameters that return maximum size image,\n- in other cases, the default image served for default resolution.\nShould include the main image as the first in the list.\nData URLs are not allowed.",
+            "items": {
+              "$schema": "http://json-schema.org/draft-07/schema#",
+              "title": "Image",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "url": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "title": "URL",
+                  "type": "string",
+                  "pattern": "^https?://[\\S]+$",
+                  "additionalProperties": false,
+                  "description": "A URL of an image"
+                }
+              },
+              "required": [
+                "url"
+              ]
+            },
+            "type": "array"
+          },
+          "mainImage": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "title": "Image",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "url": {
+                "$schema": "http://json-schema.org/draft-07/schema#",
+                "title": "URL",
+                "type": "string",
+                "pattern": "^https?://[\\S]+$",
+                "additionalProperties": false,
+                "description": "A URL of an image"
+              }
+            },
+            "required": [
+              "url"
+            ],
+            "description": "The details of the main image of the product.\nData URL is not allowed."
+          },
+          "mpn": {
+            "description": "The Manufacturer Part Number (MPN) of the product. The product would have the same MPN across different e-commerce websites.",
+            "example": "HSC0424PP",
+            "type": "string"
+          },
+          "name": {
+            "description": "The name of the product, as appears on the page (no post-processing).\nFormat: trimmed.",
+            "type": "string",
+            "example": "White two-door refrigerator"
+          },
+          "price": {
+            "description": "The price at which the product is being offered.\nThe value should be lower than regularPrice (violation produces a warning).\nFormat:\n- no thousands separator,\n- full stop as decimal separator.",
+            "example": "9999.99",
+            "pattern": "^[0-9]+(\\.[0-9]+)?$",
+            "type": "string"
+          },
+          "regularPrice": {
+            "description": "The price at which the product was being offered and which is presented as a reference to the current price. It may be represented by original price, list price or maximum retail price for which the product is sold. This field is only returned if it is explicitly mentioned in the offer or the product page.\nThe value should be higher than price (violation produces a warning).\nFormat:\n- no thousands separator,\n- full stop as decimal separator.",
+            "example": "11999.99",
+            "pattern": "^[0-9]+(\\.[0-9]+)?$",
+            "type": "string"
+          },
+          "size": {
+            "description": "Denotes the size or dimensions of the product. Pertinent to products such as garments, shoes, accessories etc.",
+            "examples": [
+              "XL",
+              "EU 6",
+              "12",
+              "25 x 25 x 50 cm"
+            ],
+            "type": "string"
+          },
+          "sku": {
+            "description": "The Stock Keeping Unit (SKU), i.e. a merchant-specific identifier for the product.",
+            "example": "A123DK9823",
+            "type": "string"
+          },
+          "style": {
+            "description": "Denotes the style of the product. Pertinent to products such as garments, shoes, accessories etc.",
+            "examples": [
+              "Polka dots",
+              "Strips",
+              "Nickel finish with translucent glass"
+            ],
+            "type": "string"
+          },
+          "additionalProperties": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "description": "A name-value pair field holding information pertaining to specific features. Usually in a form of a specification table or freeform specification list.",
+            "example": [
+              {
+                "name": "Style",
+                "value": "polka dots"
+              },
+              {
+                "name": "Temperature range",
+                "value": "-5 to 5\u00b0C"
+              },
+              {
+                "name": "Number of shelves",
+                "value": "3"
+              }
+            ],
+            "type": "array",
+            "items": {
+              "$schema": "http://json-schema.org/draft-07/schema#",
+              "title": "A generic name:value field",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": [
+                    "string"
+                  ]
+                }
+              },
+              "required": [
+                "name"
+              ]
+            }
+          },
+          "url": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "title": "URL",
+            "type": "string",
+            "pattern": "^https?://[\\S]+$",
+            "additionalProperties": false,
+            "description": "The main URL of the page where the product was extracted, after any redirects, but without canonicalization.",
+            "example": "https://example.com/?product=product22"
+          },
+          "canonicalUrl": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "title": "URL",
+            "type": "string",
+            "pattern": "^https?://[\\S]+$",
+            "additionalProperties": false,
+            "description": "The canonical form of the URL, selected by the website.",
+            "example": "https://example.com/product22"
+          }
+        }
+      },
+      {
+        "properties": {
+          "aggregateRating": {
+            "additionalProperties": false,
+            "anyOf": [
+              {
+                "required": [
+                  "ratingValue"
+                ]
+              },
+              {
+                "required": [
+                  "reviewCount"
+                ]
+              }
+            ],
+            "description": "The overall rating, based on a collection of reviews or ratings.",
+            "example": {
+              "bestRating": 5.0,
+              "ratingValue": 4.0,
+              "reviewCount": 24
+            },
+            "properties": {
+              "bestRating": {
+                "description": "The highest value allowed in this rating system. The value should not be lower than ratingValue.",
+                "type": "number"
+              },
+              "ratingValue": {
+                "description": "The rating for the content. The value should not be higher than bestRating.",
+                "type": "number"
+              },
+              "reviewCount": {
+                "description": "The total number of reviews.",
+                "type": "integer"
+              }
+            },
+            "type": "object"
+          },
+          "brand": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "additionalProperties": true,
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Name of the brand",
+                "example": "Samsung"
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "description": "The details of the brand associated with the product.",
+            "example": {
+              "name": "Ka-pow"
+            }
+          },
+          "breadcrumbs": {
+            "type": "array",
+            "description": "The list of breadcrumbs with URL and/or category name.\nAll levels of breadcrumbs should be included (e.g. \"Home\" or product name, if they are included in the breadcrumbs).",
+            "example": [
+              {
+                "url": "http://example.com/level1",
+                "name": "Level 1"
+              },
+              {
+                "url": "http://example.com/level1/level2",
+                "name": "Level 2"
+              }
+            ],
+            "items": {
+              "$schema": "http://json-schema.org/draft-07/schema#",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Breadcrumb name or category name."
+                },
+                "url": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "title": "URL",
+                  "type": "string",
+                  "pattern": "^https?://[\\S]+$",
+                  "additionalProperties": false,
+                  "description": "Breadcrumb link."
+                }
+              },
+              "anyOf": [
+                {
+                  "required": [
+                    "name"
+                  ]
+                },
+                {
+                  "required": [
+                    "url"
+                  ]
+                }
+              ]
+            }
+          },
+          "features": {
+            "description": "The list of product features, usually listed as bullet points.",
+            "example": [
+              "Easily store fragile products.",
+              "Bluetooth connectivity."
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "description": {
+            "description": "Full main description of the product, containing the most useful pieces of information, if other pieces of description can be found on the page. It may contain data found in other fields (features, additionalProperties).\nFormat:\n- trimmed (no whitespace at the beginning or the end of the description string),\n- line breaks included,\n- no length limit,\n- no normalization of Unicode characters,\n- no concatenation of description from different parts of the page.",
+            "type": "string",
+            "example": "Full freshness all over the fridge\n5 Conversion Modes on demand\nSuper Cooling Plus\u2122"
+          },
+          "descriptionHtml": {
+            "type": "string",
+            "description": "The normalized HTML code of the product description.\nFormat:\n- HTML string normalized in a consistent way with internal algorithm",
+            "example": "<article><p>Full freshness all over the fridge</p>\n<p>5 Conversion Modes on demand</p>\n<p>Super Cooling Plus&trade;</p></article>"
+          },
+          "variants": {
+            "type": "array",
+            "items": {
+              "properties": {
+                "availability": {
+                  "description": "The availability status for the product.",
+                  "enum": [
+                    "InStock",
+                    "OutOfStock"
+                  ],
+                  "example": [
+                    "InStock"
+                  ],
+                  "type": "string"
+                },
+                "color": {
+                  "description": "The color of the product.",
+                  "type": "string",
+                  "example": "white"
+                },
+                "currency": {
+                  "description": "The currency associated with the price, in ISO 4217 standard (e.g. USD).",
+                  "examples": [
+                    "USD",
+                    "JPY"
+                  ],
+                  "pattern": "^[A-Z]{3}$",
+                  "type": "string"
+                },
+                "currencyRaw": {
+                  "description": "The currency associated with the price, as appears on the page (no post-processing).",
+                  "example": "$",
+                  "type": "string"
+                },
+                "productId": {
+                  "description": "Product identifier, unique across dataset. It may come in the form of an SKU, any other identifier, a hash or even a URL.\nUnique across dataset (violation produces a warning).",
+                  "type": "string"
+                },
+                "gtin": {
+                  "description": "List of standardized GTIN product identifiers associated with the product, which are unique for the product across different sellers.",
+                  "example": [
+                    {
+                      "type": "gtin8",
+                      "value": "86591475"
+                    },
+                    {
+                      "type": "gtin13",
+                      "value": "9783161484100"
+                    }
+                  ],
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "type",
+                      "value"
+                    ],
+                    "properties": {
+                      "type": {
+                        "description": "The type of product identifier.",
+                        "type": "string",
+                        "enum": [
+                          "gtin13",
+                          "gtin8",
+                          "gtin14",
+                          "isbn10",
+                          "isbn13",
+                          "ismn",
+                          "issn",
+                          "upc"
+                        ]
+                      },
+                      "value": {
+                        "description": "The value of product identifier.\nFormat: - Normalized: only numerical characters allowed.",
+                        "type": "string",
+                        "pattern": "^[0-9]+$"
+                      }
+                    }
+                  }
+                },
+                "images": {
+                  "description": "A list of URL values of all images of the product. This does not take into account any images in the product description.\nBest quality image, under the following conditions:\n- if possible without making additional requests,\n- if required, with additional parameters that return maximum size image,\n- in other cases, the default image served for default resolution.\nShould include the main image as the first in the list.\nData URLs are not allowed.",
+                  "items": {
+                    "$schema": "http://json-schema.org/draft-07/schema#",
+                    "title": "Image",
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "url": {
+                        "$schema": "http://json-schema.org/draft-07/schema#",
+                        "title": "URL",
+                        "type": "string",
+                        "pattern": "^https?://[\\S]+$",
+                        "additionalProperties": false,
+                        "description": "A URL of an image"
+                      }
+                    },
+                    "required": [
+                      "url"
+                    ]
+                  },
+                  "type": "array"
+                },
+                "mainImage": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "title": "Image",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "url": {
+                      "$schema": "http://json-schema.org/draft-07/schema#",
+                      "title": "URL",
+                      "type": "string",
+                      "pattern": "^https?://[\\S]+$",
+                      "additionalProperties": false,
+                      "description": "A URL of an image"
+                    }
+                  },
+                  "required": [
+                    "url"
+                  ],
+                  "description": "The details of the main image of the product.\nData URL is not allowed."
+                },
+                "mpn": {
+                  "description": "The Manufacturer Part Number (MPN) of the product. The product would have the same MPN across different e-commerce websites.",
+                  "example": "HSC0424PP",
+                  "type": "string"
+                },
+                "name": {
+                  "description": "The name of the product, as appears on the page (no post-processing).\nFormat: trimmed.",
+                  "type": "string",
+                  "example": "White two-door refrigerator"
+                },
+                "price": {
+                  "description": "The price at which the product is being offered.\nThe value should be lower than regularPrice (violation produces a warning).\nFormat:\n- no thousands separator,\n- full stop as decimal separator.",
+                  "example": "9999.99",
+                  "pattern": "^[0-9]+(\\.[0-9]+)?$",
+                  "type": "string"
+                },
+                "regularPrice": {
+                  "description": "The price at which the product was being offered and which is presented as a reference to the current price. It may be represented by original price, list price or maximum retail price for which the product is sold. This field is only returned if it is explicitly mentioned in the offer or the product page.\nThe value should be higher than price (violation produces a warning).\nFormat:\n- no thousands separator,\n- full stop as decimal separator.",
+                  "example": "11999.99",
+                  "pattern": "^[0-9]+(\\.[0-9]+)?$",
+                  "type": "string"
+                },
+                "size": {
+                  "description": "Denotes the size or dimensions of the product. Pertinent to products such as garments, shoes, accessories etc.",
+                  "examples": [
+                    "XL",
+                    "EU 6",
+                    "12",
+                    "25 x 25 x 50 cm"
+                  ],
+                  "type": "string"
+                },
+                "sku": {
+                  "description": "The Stock Keeping Unit (SKU), i.e. a merchant-specific identifier for the product.",
+                  "example": "A123DK9823",
+                  "type": "string"
+                },
+                "style": {
+                  "description": "Denotes the style of the product. Pertinent to products such as garments, shoes, accessories etc.",
+                  "examples": [
+                    "Polka dots",
+                    "Strips",
+                    "Nickel finish with translucent glass"
+                  ],
+                  "type": "string"
+                },
+                "additionalProperties": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "description": "A name-value pair field holding information pertaining to specific features. Usually in a form of a specification table or freeform specification list.",
+                  "example": [
+                    {
+                      "name": "Style",
+                      "value": "polka dots"
+                    },
+                    {
+                      "name": "Temperature range",
+                      "value": "-5 to 5\u00b0C"
+                    },
+                    {
+                      "name": "Number of shelves",
+                      "value": "3"
+                    }
+                  ],
+                  "type": "array",
+                  "items": {
+                    "$schema": "http://json-schema.org/draft-07/schema#",
+                    "title": "A generic name:value field",
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "value": {
+                        "type": [
+                          "string"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "name"
+                    ]
+                  }
+                },
+                "url": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "title": "URL",
+                  "type": "string",
+                  "pattern": "^https?://[\\S]+$",
+                  "additionalProperties": false,
+                  "description": "The main URL of the page where the product was extracted, after any redirects, but without canonicalization.",
+                  "example": "https://example.com/?product=product22"
+                },
+                "canonicalUrl": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "title": "URL",
+                  "type": "string",
+                  "pattern": "^https?://[\\S]+$",
+                  "additionalProperties": false,
+                  "description": "The canonical form of the URL, selected by the website.",
+                  "example": "https://example.com/product22"
+                }
+              }
+            },
+            "example": [
+              {
+                "additionalProperties": [
+                  {
+                    "name": "Style",
+                    "value": "polka dots"
+                  },
+                  {
+                    "name": "Temperature range",
+                    "value": "-5 to 5\u00b0C"
+                  },
+                  {
+                    "name": "Number of shelves",
+                    "value": "3"
+                  }
+                ],
+                "availability": "InStock",
+                "brand": {
+                  "name": "Ka-pow"
+                },
+                "canonicalUrl": "https://example.com/product22?variant=24",
+                "color": "Black",
+                "currency": "USD",
+                "currencyRaw": "$",
+                "gtin": [
+                  {
+                    "type": "gtin13",
+                    "value": "9783161484100"
+                  },
+                  {
+                    "type": "gtin8",
+                    "value": "86591475"
+                  }
+                ],
+                "images": [
+                  {
+                    "url": "http://example.com/image1-1.png"
+                  },
+                  {
+                    "url": "http://example.com/image2-1.png"
+                  }
+                ],
+                "mainImage": {
+                  "url": "http://example.com/image1-1.png"
+                },
+                "mpn": "HSC0424PP",
+                "name": "Black two-door refrigerator",
+                "price": "11999.99",
+                "productId": "A123DK9823-1",
+                "regularPrice": "9999.99",
+                "size": "XL",
+                "sku": "A123DK9823-1",
+                "style": "polka dots",
+                "url": "https://example.com/product22?variant=24"
+              },
+              {
+                "additionalProperties": [
+                  {
+                    "name": "Style",
+                    "value": "polka dots"
+                  },
+                  {
+                    "name": "Temperature range",
+                    "value": "-5 to 5\u00b0C"
+                  },
+                  {
+                    "name": "Number of shelves",
+                    "value": "3"
+                  }
+                ],
+                "availability": "InStock",
+                "canonicalUrl": "https://example.com/product22?variant=25",
+                "color": "Inox",
+                "currency": "USD",
+                "currencyRaw": "$",
+                "gtin": [
+                  {
+                    "type": "gtin13",
+                    "value": "9783161484100"
+                  },
+                  {
+                    "type": "gtin8",
+                    "value": "86591475"
+                  }
+                ],
+                "images": [
+                  {
+                    "url": "http://example.com/image1-2.png"
+                  },
+                  {
+                    "url": "http://example.com/image2-2.png"
+                  }
+                ],
+                "mainImage": {
+                  "url": "http://example.com/image1-2.png"
+                },
+                "mpn": "HSC0424PP",
+                "name": "Inox two-door refrigerator",
+                "price": "10999.99",
+                "productId": "A123DK9823-2",
+                "regularPrice": "9999.99",
+                "size": "XL",
+                "sku": "A123DK9823-2",
+                "style": "polka dots",
+                "url": "https://example.com/product22?variant=25"
+              }
+            ],
+            "description": "The list of the details of product variants.\nProduct variant is defined as another product with characteristics very close to the base product, displayed on the same page, with the ability to choose the product from a selection. Usually variants of a product differ in color, size or volume.\nWhich products are not considered variants:\n- other products included in the same bundle\n- product add-ons, e.g. premium upgrade of the base product\nThe properties apply to the variant product, not the base product.\nContains all of the attributes available for the base product, except:\n- variants\n- metadata\n- brand\n- description\n- descriptionHtml\n- features\n- breadcrumbs\n- aggregateRating\nThose attributes are either harder to extract or frequently have the same contents across all variants. The data needs to be specific to the variant and available, it is not copied from the base product. Hidden variants (not displayed on the page) are not extracted by default.\nVariant data needs to be obtainable with a minimal number of requests, with the first available variant selected as base product. Otherwise the data is not extracted."
+          },
+          "metadata": {
+            "description": "Contains metadata about the data extraction process.",
+            "type": "object",
+            "properties": {
+              "dateDownloaded": {
+                "description": "The timestamp at which the product data was downloaded.\nTimezone: UTC.\nFormat: ISO 8601 format. YYYY-MM-DDThh:mm:ssZ",
+                "example": "2022-12-31T13:01:54Z",
+                "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$",
+                "type": "string"
+              },
+              "probability": {
+                "description": "The probability that the page belongs to certain data type.",
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            }
+          }
+        }
+      }
+    ],
+    "required": [
+      "url"
+    ],
+    "title": "Product - Standard",
+    "type": "object"
+  }

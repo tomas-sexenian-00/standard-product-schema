@@ -1,1 +1,1 @@
-# standard-product-schema
+This repository sole purpose is to host the standard product schema so it's publicly available
